@@ -5,7 +5,7 @@ import ProjectCarousel from "@/components/Projects"
 export default function Home() {
   return (
       <div>
-        <ProjectCarousel />
+        Individual project
       </div>
   )
 }

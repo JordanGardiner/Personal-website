@@ -1,47 +1,55 @@
 "use client";
 
-import { Metadata } from "next";
-
 import "@/app/globals.css";
-
-import { SCREENS, SPACING } from "@/constants/styles";
-import { ColorScheme, ColorSchemeProvider, MantineProvider, MantineThemeOverride } from "@mantine/core";
+import theme from "@/theme";
+import dynamic from 'next/dynamic';
+ 
+import { 
+  ColorScheme,
+  ColorSchemeProvider,
+  MantineProvider,
+  AppShell,
+  Flex,
+  createStyles,
+  LoadingOverlay
+} from "@mantine/core";
 import { useState } from "react";
+import { useMediaQuery } from 'react-responsive'
 
-const theme: MantineThemeOverride = {
-  breakpoints: { ...SCREENS },
-  spacing: { xs: SPACING[2.5], sm: SPACING[3], md: SPACING[4], lg: SPACING[5], xl: SPACING[6] },
-  colors: {
-    "dark-gray": [
-      "#E9ECEF",
-      "#CED4DA",
-      "#909296",
-      "#5C5F66",
-      "#373A40",
-      "#2C2E33",
-      "#25262B",
-      "#1A1B1E",
-      "#141517",
-      "#101113",
-    ],
-  },
-  primaryColor: "dark-gray",
-};
 
-interface ProviderProps {
-  children: React.ReactNode;
-}
+const useStyles = createStyles((theme) => ({
+  overlay: {
+    zIndex: 9,
+    border: "0",
+    position: "absolute"
+  }
+}))
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const metadata: Metadata = {
-  title: "Next.js",
-};
-
 export default function Layout(props: LayoutProps) {
   const { children } = props;
+  const { classes } = useStyles();
+
+  const links = [
+    { 
+      link: "/", 
+      label: "Home"
+    },
+    { 
+      link: "/services", 
+      label: "Services"
+    }
+  ];
+
+  const DynamicNavigation = dynamic(() => import("../components/Navigation"), {
+    ssr: false,
+    loading: () => {
+      return <LoadingOverlay visible={true} overlayBlur={3} />
+    },
+  })
 
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -52,8 +60,18 @@ export default function Layout(props: LayoutProps) {
       <head />
       <body>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-          <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-            {children}
+          <MantineProvider withGlobalStyles withNormalizeCSS theme={{...theme, colorScheme}}>
+            <AppShell
+              
+              sx={(theme) => ({
+                main: { backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[0] },
+              })}
+            >
+              <DynamicNavigation links={links}/>
+              <Flex bg={"green"} w={"100%"} h={"100%"} direction="column">
+                {children}
+              </Flex>
+            </AppShell>
           </MantineProvider>
         </ColorSchemeProvider>
       </body>
