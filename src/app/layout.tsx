@@ -62,15 +62,12 @@ export default function Layout(props: LayoutProps) {
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider withGlobalStyles withNormalizeCSS theme={{...theme, colorScheme}}>
             <AppShell
-              
               sx={(theme) => ({
                 main: { backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[0] },
               })}
             >
               <DynamicNavigation links={links}/>
-              <Flex bg={"green"} w={"100%"} h={"100%"} direction="column">
-                {children}
-              </Flex>
+              {children}
             </AppShell>
           </MantineProvider>
         </ColorSchemeProvider>
